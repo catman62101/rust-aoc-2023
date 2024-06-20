@@ -44,7 +44,12 @@ pub fn part1(grid: &Vec<Vec<u8>>) -> i32 {
 
 pub fn part2(grid: &Vec<Vec<u8>>) -> i32 {
   let directions = [
-    (-1, 1), (0, 1), (1, 1), (-1, -1), (0, -1), (1, -1)
+    // top
+    (-1, 1), (0, 1), (1, 1),
+    // bottom
+    (-1, -1), (0, -1), (-1, 1),
+    // mid
+    (-1, 0), (1, 0)
   ];
   let width = grid[0].len() as i32;
   let height = grid.len() as i32;
@@ -53,8 +58,11 @@ pub fn part2(grid: &Vec<Vec<u8>>) -> i32 {
 
   for y in 0..height {
     for x in 0..width {
-      let mut top_index: Option<usize> = None;
-      let mut bottom_index: Option<usize> = None;
+      let mut top_index1: Option<usize> = None;
+      let mut top_index2: Option<usize> = None;
+      let mut bottom_index1: Option<usize> = None;
+      let mut bottom_index2: Option<usize> = None;
+      let mut indices = Vec::<(usize, usize)>::new();
 
       match grid[y as usize][x as usize] {
         b'*' => {
@@ -67,9 +75,31 @@ pub fn part2(grid: &Vec<Vec<u8>>) -> i32 {
             }
 
             match grid[dy as usize][dx as usize] {
-              b'0'..=b'9' => match *sy > 0 {
-                true => bottom_index = Some(dx as usize),
-                false => top_index = Some(dx as usize),
+              b'0'..=b'9' => match *sy {
+                 1 => {
+                  if let Some(idx) = bottom_index1 {
+                    if idx as i32 == dx-1  {
+                      bottom_index1 = Some(dx as usize);
+                    } else {
+                      bottom_index2 = Some(dx as usize);
+                    }
+                  } else {
+                    bottom_index1 = Some(dx as usize);
+                  }
+                },
+                -1 => {
+                  if let Some(idx) = top_index1 {
+                    if idx as i32 == dx-1  {
+                      top_index1 = Some(dx as usize);
+                    } else {
+                      top_index2 = Some(dx as usize);
+                    }
+                  } else {
+                    top_index1 = Some(dx as usize);
+                  }
+                },
+                 0 => indices.push((dx as usize, dy as usize)),
+                _ => ()
               },
               _ => ()
             }
@@ -78,64 +108,55 @@ pub fn part2(grid: &Vec<Vec<u8>>) -> i32 {
         _ => ()
       };
 
-      if top_index == None || bottom_index == None {
+      if let Some(idx) = top_index1 {
+        indices.push((idx, (y-1) as usize));
+      }
+      if let Some(idx) = top_index2 {
+        indices.push((idx, (y-1) as usize));
+      }
+      if let Some(idx) = bottom_index1 {
+        indices.push((idx, (y+1) as usize));
+      }
+      if let Some(idx) = bottom_index2 {
+        indices.push((idx, (y+1) as usize));
+      }
+      
+      
+      if indices.len() != 2 {
         continue;
       }
 
-      let mut start = top_index.unwrap() as i32;
-      let mut end = top_index.unwrap() as i32;
+      // println!("{:?}", indices);
 
-      while start >= 0 {
-        match grid[(y-1) as usize][start as usize] {
-          b'0'..=b'9' => (),
-          _ => break
-        };
-
-        start -= 1;
-      }
-      start += 1;
-      while end < width {
-        match grid[(y-1) as usize][end as usize] {
-          b'0'..=b'9' => (),
-          _ => break
-        };
-
-        end += 1;
-      }
-
-      let num1: i32 = String::from_utf8(
-        grid[(y-1) as usize][(start as usize)..(end as usize)].to_vec()
-      ).unwrap().parse().unwrap();
-
-      start = bottom_index.unwrap() as i32;
-      end = bottom_index.unwrap() as i32;
-      while start >= 0 {
-        match grid[(y+1) as usize][start as usize] {
-          b'0'..=b'9' => (),
-          _ => break
-        };
-
-        start -= 1;
-      }
-      start += 1;
-      while end < width {
-        match grid[(y+1) as usize][end as usize] {
-          b'0'..=b'9' => (),
-          _ => break
-        };
-
-        end += 1;
-      }
-
-      // println!("{}", String::from_utf8(
-      //   grid[(y+1) as usize][(start as usize)..(end as usize)].to_vec()
-      // ).unwrap());
-      let num2: i32 = String::from_utf8(
-        grid[(y+1) as usize][(start as usize)..(end as usize)].to_vec()
-      ).unwrap().parse().unwrap();
-      // println!("{} {}", num1, num2);
+      let mut gear_ratio = 1;
       
-      part_num_sum += num1 * num2;
+      for (num_x, num_y) in indices {
+        let mut start = num_x as i32;
+        let mut end = num_x;
+  
+        while start >= 0 {
+          match grid[num_y][start as usize] {
+            b'0'..=b'9' => (),
+            _ => break
+          };
+          start -= 1;
+        }
+        start += 1;
+        while end < width as usize {
+          match grid[num_y][end] {
+            b'0'..=b'9' => (),
+            _ => break
+          };
+          end += 1;
+        }
+
+        let start = start as usize;
+        let num: i32 = String::from_utf8(grid[num_y][start..end].to_vec()).unwrap().parse().unwrap();
+        // println!("{}", num);
+        gear_ratio *= num;
+      }
+
+      part_num_sum += gear_ratio;
     }
   }
   

@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, time::Instant};
 
 pub mod common;
 pub mod day1;
@@ -8,25 +8,29 @@ pub mod day3;
 fn main() {
     let solutions = [
         || -> () {
-            println!("============= DAY 1 =============");
             let lines = common::load_lines_from_file("inputs/day1.txt");
-            println!("PART 1: {}", day1::part1(&lines));
-            println!("PART 2: {}", day1::part2(&lines));
+
+            let start = Instant::now();
+            println!("PART 1: {}, ({:?} elapsed)", day1::part1(&lines), start.elapsed());
+            let start = Instant::now();
+            println!("PART 2: {}, ({:?} elapsed)", day1::part2(&lines), start.elapsed());
         },
         || -> () {
-            println!("============= DAY 2 =============");
             let lines = common::load_lines_from_file("inputs/day2.txt");
-            println!("PART 1: {}", day2::part1(&lines));
-            println!("PART 2: {}", day2::part2(&lines));
+            let start = Instant::now();
+            println!("PART 1: {}, ({:?} elapsed)", day2::part1(&lines), start.elapsed());
+            let start = Instant::now();
+            println!("PART 2: {}, ({:?} elapsed)", day2::part2(&lines), start.elapsed());
         },
         || -> () {
-            println!("============= DAY 3 =============");
             let grid: Vec<Vec<u8>> = common::load_lines_from_file("inputs/day3.txt")
                 .iter()
                 .map(|row| Vec::from(row.as_bytes()))
                 .collect();
-            println!("PART 1: {}", day3::part1(&grid));
-            println!("PART 2: {}", day3::part2(&grid));
+            let start = Instant::now();
+            println!("PART 1: {}, ({:?} elapsed)", day3::part1(&grid), start.elapsed());
+            let start = Instant::now();
+            println!("PART 2: {}, ({:?} elapsed)", day3::part2(&grid), start.elapsed());
         }
     ];
 
@@ -49,7 +53,8 @@ fn main() {
         _ => panic!("invalid number of arguments provided")
     };
 
-    for solution in solutions {
+    for (i, solution) in solutions.iter().enumerate() {
+        println!("============= DAY {} =============", i+1);
         solution();
         println!();
     }

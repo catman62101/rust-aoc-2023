@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-pub fn part1(lines: &Vec<String>) -> i32 {
+pub fn part1(lines: &Vec<String>) -> u16 {
   let word_to_num = vec![
     ("0", 0), ("1", 1), ("2", 2), ("3", 3), ("4", 4),
     ("5", 5), ("6", 6), ("7", 7), ("8", 8), ("9", 9),
@@ -14,18 +14,20 @@ pub fn part1(lines: &Vec<String>) -> i32 {
   let mut calibration_sum = 0;
 
   for line in lines {
-    let mut digit1 = -1;
-    let mut digit2 = -1;
+    let mut digit1 = 0;
+    let mut digit2 = 0;
 
     for i in 0..line.len() {
-      match trie.search(line.clone(), i) {
-        None => (),
-        Some(value) => {
-          digit2 = value;
-          if digit1 == -1 {
-            digit1 = digit2;
-          }
-        }
+      if let Some(value) = trie.search(line, i) {
+        digit1 = value;
+        break;
+      }
+    }
+
+    for i in (0..line.len()).rev() {
+      if let Some(value) = trie.search(line, i) {
+        digit2 = value;
+        break;
       }
     }
 
@@ -35,7 +37,7 @@ pub fn part1(lines: &Vec<String>) -> i32 {
   calibration_sum
 }
 
-pub fn part2(lines: &Vec<String>) -> i32 {
+pub fn part2(lines: &Vec<String>) -> u16 {
   let word_to_num = vec![
     ("0", 0), ("1", 1), ("2", 2), ("3", 3), ("4", 4),
     ("5", 5), ("6", 6), ("7", 7), ("8", 8), ("9", 9),
@@ -48,33 +50,37 @@ pub fn part2(lines: &Vec<String>) -> i32 {
     trie.insert(word.to_string(), val)
   }
 
-  let mut calibration_sum = 0;
+  let mut digit_sum1 = 0;
+  let mut digit_sum2 = 0;
 
   for line in lines {
-    let mut digit1 = -1;
-    let mut digit2 = -1;
+    let mut digit1 = 0;
+    let mut digit2 = 0;
 
-    for i in 0..line.len() {
-      match trie.search(line.clone(), i) {
-        None => (),
-        Some(value) => {
-          digit2 = value;
-          if digit1 == -1 {
-            digit1 = digit2;
-          }
-        }
+    for i in 0..(line.len()) {
+      if let Some(value) = trie.search(line, i) {
+        digit1 = value;
+        break;
       }
     }
 
-    calibration_sum += 10 * digit1 + digit2;
+    for i in (0..(line.len())).rev() {
+      if let Some(value) = trie.search(line, i) {
+        digit2 = value;
+        break;
+      }
+    }
+
+    digit_sum1 += digit1;
+    digit_sum2 += digit2;
   }
 
-  calibration_sum
+  digit_sum1 * 10 + digit_sum2
 }
 
 #[derive(Debug)]
 struct TrieNode {
-  value: Option<i32>,
+  value: Option<u16>,
   children: HashMap<u8, Box<TrieNode>>
 }
 
@@ -86,7 +92,7 @@ impl TrieNode {
     }
   }
 
-  fn insert(&mut self, word: String, value: i32) {
+  fn insert(&mut self, word: String, value: u16) {
     let mut curr = self;
 
     for letter in word.as_bytes() {
@@ -105,7 +111,7 @@ impl TrieNode {
     curr.value = Some(value);
   }
 
-  fn search(&self, line: String, idx: usize) -> Option<i32> {
+  fn search(&self, line: &String, idx: usize) -> Option<u16> {
     let mut curr = self;
 
     for letter in line[idx..line.len()].as_bytes() {
@@ -114,9 +120,8 @@ impl TrieNode {
         None => return None
       };
 
-      match curr.value {
-        Some(val) => return Some(val),
-        None => ()
+      if let Some(val) = curr.value {
+        return Some(val);
       }
     }
 
@@ -144,13 +149,13 @@ mod tests {
 
     for (word, val) in word_to_num.iter() {
       println!("{word} {val}");
-      assert_eq!(trie.search(word.to_string(), 0).unwrap(), *val);
+      assert_eq!(trie.search(&word.to_string(), 0).unwrap(), *val);
     }
 
     for (word, val) in word_to_num {
       println!("{word} {val}");
       println!("{}", format!("  {}  ", word.to_string()));
-      assert_eq!(trie.search(format!("  {}  ", word.to_string()), 2).unwrap(), val);
+      assert_eq!(trie.search(&format!("  {}  ", word.to_string()), 2).unwrap(), val);
     }
   }
 }
