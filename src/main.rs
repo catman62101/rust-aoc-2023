@@ -4,6 +4,7 @@ pub mod common;
 pub mod day1;
 pub mod day2;
 pub mod day3;
+pub mod day4;
 
 fn main() {
     let solutions = [
@@ -31,6 +32,13 @@ fn main() {
             println!("PART 1: {} ({:?} elapsed)", day3::part1(&grid), start.elapsed());
             let start = Instant::now();
             println!("PART 2: {} ({:?} elapsed)", day3::part2(&grid), start.elapsed());
+        },
+        || -> () {
+            let lines = common::load_lines_from_file("inputs/day4.txt");
+            let start = Instant::now();
+            println!("PART 1: {} ({:?} elapsed)", day4::part1(&lines), start.elapsed());
+            let start = Instant::now();
+            println!("PART 2: {} ({:?} elapsed)", day4::part2(&lines), start.elapsed());
         }
     ];
 

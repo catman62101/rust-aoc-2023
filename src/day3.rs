@@ -61,8 +61,6 @@ pub fn part2(grid: &Vec<Vec<u8>>) -> i32 {
         numbers.append(&mut extract_numbers(&grid[y], x));
         if numbers.len() != 2 { continue; }
 
-        println!("{:?}", numbers);
-
         gear_ratio_sum += numbers[0] * numbers[1];
       }
     }
