@@ -11,16 +11,16 @@ fn main() {
             let lines = common::load_lines_from_file("inputs/day1.txt");
 
             let start = Instant::now();
-            println!("PART 1: {}, ({:?} elapsed)", day1::part1(&lines), start.elapsed());
+            println!("PART 1: {} ({:?} elapsed)", day1::part1(&lines), start.elapsed());
             let start = Instant::now();
-            println!("PART 2: {}, ({:?} elapsed)", day1::part2(&lines), start.elapsed());
+            println!("PART 2: {} ({:?} elapsed)", day1::part2(&lines), start.elapsed());
         },
         || -> () {
             let lines = common::load_lines_from_file("inputs/day2.txt");
             let start = Instant::now();
-            println!("PART 1: {}, ({:?} elapsed)", day2::part1(&lines), start.elapsed());
+            println!("PART 1: {} ({:?} elapsed)", day2::part1(&lines), start.elapsed());
             let start = Instant::now();
-            println!("PART 2: {}, ({:?} elapsed)", day2::part2(&lines), start.elapsed());
+            println!("PART 2: {} ({:?} elapsed)", day2::part2(&lines), start.elapsed());
         },
         || -> () {
             let grid: Vec<Vec<u8>> = common::load_lines_from_file("inputs/day3.txt")
@@ -28,9 +28,9 @@ fn main() {
                 .map(|row| Vec::from(row.as_bytes()))
                 .collect();
             let start = Instant::now();
-            println!("PART 1: {}, ({:?} elapsed)", day3::part1(&grid), start.elapsed());
+            println!("PART 1: {} ({:?} elapsed)", day3::part1(&grid), start.elapsed());
             let start = Instant::now();
-            println!("PART 2: {}, ({:?} elapsed)", day3::part2(&grid), start.elapsed());
+            println!("PART 2: {} ({:?} elapsed)", day3::part2(&grid), start.elapsed());
         }
     ];
 

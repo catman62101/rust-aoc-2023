@@ -43,122 +43,82 @@ pub fn part1(grid: &Vec<Vec<u8>>) -> i32 {
 }
 
 pub fn part2(grid: &Vec<Vec<u8>>) -> i32 {
-  let directions = [
-    // top
-    (-1, 1), (0, 1), (1, 1),
-    // bottom
-    (-1, -1), (0, -1), (-1, 1),
-    // mid
-    (-1, 0), (1, 0)
-  ];
-  let width = grid[0].len() as i32;
-  let height = grid.len() as i32;
-
-  let mut part_num_sum = 0;
+  let height = grid.len();
+  let width = grid[0].len();
+  let mut gear_ratio_sum = 0;
 
   for y in 0..height {
     for x in 0..width {
-      let mut top_index1: Option<usize> = None;
-      let mut top_index2: Option<usize> = None;
-      let mut bottom_index1: Option<usize> = None;
-      let mut bottom_index2: Option<usize> = None;
-      let mut indices = Vec::<(usize, usize)>::new();
+      if grid[y][x] == b'*' {
+        let mut numbers = Vec::<i32>::new();
 
-      match grid[y as usize][x as usize] {
-        b'*' => {
-          for (sx, sy) in directions.iter() {
-            let dx = x + sx;
-            let dy = y + sy;
-
-            if dx < 0 || dx >= width || dy < 0 || dy >= height {
-              continue;
-            }
-
-            match grid[dy as usize][dx as usize] {
-              b'0'..=b'9' => match *sy {
-                 1 => {
-                  if let Some(idx) = bottom_index1 {
-                    if idx as i32 == dx-1  {
-                      bottom_index1 = Some(dx as usize);
-                    } else {
-                      bottom_index2 = Some(dx as usize);
-                    }
-                  } else {
-                    bottom_index1 = Some(dx as usize);
-                  }
-                },
-                -1 => {
-                  if let Some(idx) = top_index1 {
-                    if idx as i32 == dx-1  {
-                      top_index1 = Some(dx as usize);
-                    } else {
-                      top_index2 = Some(dx as usize);
-                    }
-                  } else {
-                    top_index1 = Some(dx as usize);
-                  }
-                },
-                 0 => indices.push((dx as usize, dy as usize)),
-                _ => ()
-              },
-              _ => ()
-            }
-          }
-        },
-        _ => ()
-      };
-
-      if let Some(idx) = top_index1 {
-        indices.push((idx, (y-1) as usize));
-      }
-      if let Some(idx) = top_index2 {
-        indices.push((idx, (y-1) as usize));
-      }
-      if let Some(idx) = bottom_index1 {
-        indices.push((idx, (y+1) as usize));
-      }
-      if let Some(idx) = bottom_index2 {
-        indices.push((idx, (y+1) as usize));
-      }
-      
-      
-      if indices.len() != 2 {
-        continue;
-      }
-
-      // println!("{:?}", indices);
-
-      let mut gear_ratio = 1;
-      
-      for (num_x, num_y) in indices {
-        let mut start = num_x as i32;
-        let mut end = num_x;
-  
-        while start >= 0 {
-          match grid[num_y][start as usize] {
-            b'0'..=b'9' => (),
-            _ => break
-          };
-          start -= 1;
+        if y > 0 {
+          numbers.append(&mut extract_numbers(&grid[y-1], x));
         }
-        start += 1;
-        while end < width as usize {
-          match grid[num_y][end] {
-            b'0'..=b'9' => (),
-            _ => break
-          };
-          end += 1;
+        if y < height + 1 {
+          numbers.append(&mut extract_numbers(&grid[y+1], x));
         }
+        numbers.append(&mut extract_numbers(&grid[y], x));
+        if numbers.len() != 2 { continue; }
 
-        let start = start as usize;
-        let num: i32 = String::from_utf8(grid[num_y][start..end].to_vec()).unwrap().parse().unwrap();
-        // println!("{}", num);
-        gear_ratio *= num;
+        println!("{:?}", numbers);
+
+        gear_ratio_sum += numbers[0] * numbers[1];
       }
-
-      part_num_sum += gear_ratio;
     }
   }
-  
-  part_num_sum
+
+  gear_ratio_sum
+}
+
+fn is_digit(cell: u8) -> bool {
+  match cell {
+    b'0'..=b'9' => true,
+    _ => false
+  }
+}
+
+
+fn extract_numbers(line: &Vec<u8>, i: usize) -> Vec<i32> {
+  let mut numbers = Vec::<i32>::new();
+
+  if is_digit(line[i]) {
+    if let Some(num) = extract_number(line, i) {
+      numbers.push(num);
+    }
+  } else {
+    if i > 0 {
+      if let Some(num) = extract_number(line, i-1) {
+        numbers.push(num);
+      }
+    }
+    if i < line.len()-1 {
+      if let Some(num) = extract_number(line, i+1) {
+        numbers.push(num);
+      }
+    }
+  }
+
+  numbers
+}
+
+fn extract_number(line: &Vec<u8>, i: usize) -> Option<i32> {
+  let mut start = i as i32;
+  let mut end = i as i32;
+
+  while start >= 0 && is_digit(line[(start) as usize]) {
+    start -= 1;
+  }
+  start += 1;
+  while (end as usize) < line.len() && is_digit(line[end as usize]) {
+    end += 1;
+  }
+
+  return match start < end {
+    true => Some(
+      String::from_utf8(line[(start as usize)..(end as usize)].to_vec()).unwrap()
+        .parse().unwrap()
+    ),
+    false => None
+  };
 }
