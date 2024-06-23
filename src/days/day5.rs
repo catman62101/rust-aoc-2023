@@ -92,7 +92,6 @@ pub fn part2(seeds: &Vec<i64>, maps: &Vec<Vec<Translation>>) -> i64 {
     }
 
     for i in 0..(seeds.len() / 2) {
-      // println!("{} {} {}", data, seeds[2*i], seeds[2*i + 1]);
       if data >= seeds[2*i] && data < seeds[2*i] + seeds[2*i + 1] {
         return location;
       }
@@ -101,5 +100,5 @@ pub fn part2(seeds: &Vec<i64>, maps: &Vec<Vec<Translation>>) -> i64 {
     location += 1;
   }
 
-  -1
+  -1 // shouldn't get to this line unless something goes horribly wrong
 }

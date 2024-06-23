@@ -3,8 +3,5 @@ name = "rust-aoc-2023"
 version = "0.1.0"
 edition = "2021"
 
-[dependencies]
-regex = "1.10.5"
-
 [profile.dev]
 opt-level = 1

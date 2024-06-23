@@ -49,12 +49,11 @@ pub fn part2(cards: &Vec<String>) -> i32 {
 fn count_matches(numbers: Vec<i32>, winning: Vec<i32>) -> i32 {
   let winning_set = &HashSet::<i32>::from_iter(winning);
   let numbers_set = &HashSet::<i32>::from_iter(numbers);
-  let match_set: HashSet<&i32> = HashSet::intersection(
+
+  HashSet::intersection(
     winning_set,
     numbers_set
-  ).collect();
-
-  return match_set.len() as i32;
+  ).collect::<HashSet<&i32>>().len() as i32
 }
 
 fn extract_numbers(line: &[u8]) -> Vec<i32> {
