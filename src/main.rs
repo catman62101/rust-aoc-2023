@@ -1,10 +1,9 @@
 use std::{env, time::Instant};
 
+use days::*;
+
 pub mod common;
-pub mod day1;
-pub mod day2;
-pub mod day3;
-pub mod day4;
+pub mod days;
 
 fn main() {
     let solutions = [
@@ -39,6 +38,17 @@ fn main() {
             println!("PART 1: {} ({:?} elapsed)", day4::part1(&lines), start.elapsed());
             let start = Instant::now();
             println!("PART 2: {} ({:?} elapsed)", day4::part2(&lines), start.elapsed());
+        },
+        || -> () {
+            let lines = common::load_lines_from_file("inputs/day5.txt");
+            let mut seeds = Vec::<i64>::new();
+            let mut maps =vec![<Vec<day5::Translation>>::new(); 7]; // 7 maps
+            day5::load_data(lines, &mut seeds, &mut maps);
+
+            let start = Instant::now();
+            println!("PART 1: {} ({:?} elapsed)", day5::part1(&seeds, &maps), start.elapsed());
+            let start = Instant::now();
+            println!("PART 2: {} ({:?} elapsed)", day5::part2(&seeds, &maps), start.elapsed());
         }
     ];
 
