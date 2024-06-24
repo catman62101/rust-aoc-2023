@@ -1,3 +1,5 @@
+// https://adventofcode.com/2023/day/5
+
 #[derive(Clone, Copy, Debug)]
 pub struct Translation {
   pub source: i64,
@@ -5,11 +7,11 @@ pub struct Translation {
   pub range: i64
 }
 
-pub fn load_data(lines: Vec<String>, seeds: &mut Vec<i64>, maps: &mut Vec<Vec<Translation>>) {
+pub fn load_data(lines: Vec<String>, seeds: &mut Vec<i64>, maps: &mut [Vec<Translation>]) {
   let mut i = 1; // line index, start on the third line
 
   // get seeds
-  let seed_strs = lines[0].split(": ").collect::<Vec<&str>>()[1].split(" ").collect::<Vec<&str>>();
+  let seed_strs = lines[0].split(": ").collect::<Vec<&str>>()[1].split(' ').collect::<Vec<&str>>();
   for seed_str in seed_strs {
     seeds.push(
       String::from_utf8(seed_str.as_bytes().to_vec()).unwrap().parse().unwrap()
@@ -22,7 +24,7 @@ pub fn load_data(lines: Vec<String>, seeds: &mut Vec<i64>, maps: &mut Vec<Vec<Tr
     i += 1;
 
     while i < lines.len() && lines[i].as_bytes()[0].is_ascii_digit() {
-      let nums: Vec<i64> = lines[i].split(" ")
+      let nums: Vec<i64> = lines[i].split(' ')
         .collect::<Vec<&str>>().iter()
         .map(|s| s.to_string().parse().unwrap()).collect();
 
@@ -39,12 +41,12 @@ pub fn load_data(lines: Vec<String>, seeds: &mut Vec<i64>, maps: &mut Vec<Vec<Tr
   }
 }
 
-pub fn part1(seeds: &Vec<i64>, maps: &Vec<Vec<Translation>>) -> i64 {
-  let mut data = seeds.clone();
+pub fn part1(seeds: &[i64], maps: &Vec<Vec<Translation>>) -> i64 {
+  let mut data = seeds.to_vec();
 
   for map in maps {
     for val in data.iter_mut() {
-      *val += match find_translation_source(val, map) {
+      *val += match map.iter().find(|translation| translation.source <= *val && *val < translation.source + translation.range) {
         None => 0,
         Some(translation) => {
           translation.destination - translation.source
@@ -56,36 +58,16 @@ pub fn part1(seeds: &Vec<i64>, maps: &Vec<Vec<Translation>>) -> i64 {
   *data.iter().min().unwrap()
 }
 
-fn find_translation_source<'a>(val: &i64, translations: &'a Vec<Translation>) -> Option<&'a Translation> {
-  for translation in translations {
-    if translation.source <= *val && *val < translation.source + translation.range {
-      return Some(translation);
-    }
-  }
-
-  None
-}
-
-fn find_translation_destination<'a>(val: &i64, translations: &'a Vec<Translation>) -> Option<&'a Translation> {
-  for translation in translations {
-    if translation.destination <= *val && *val < translation.destination + translation.range {
-      return Some(translation);
-    }
-  }
-
-  None
-}
-
-pub fn part2(seeds: &Vec<i64>, maps: &Vec<Vec<Translation>>) -> i64 {
+pub fn part2(seeds: &[i64], maps: &[Vec<Translation>]) -> i64 {
   let mut location = 1;
-  let mut maps = maps.clone();
+  let mut maps = maps.to_vec();
   maps.reverse();
 
-  for _ in 0..1_000_000_000 as usize { // just in case
+  for _ in 0..1_000_000_000 { // just in case
     let mut data = location;
 
     for map in &maps {
-      data -= match find_translation_destination(&data, &map) {
+      data -= match map.iter().find(|translation| translation.destination <= data && data < translation.destination + translation.range) {
         None => 0,
         Some(translation) => translation.destination - translation.source
       }

@@ -1,3 +1,5 @@
+// https://adventofcode.com/2023/day/1
+
 use std::collections::HashMap;
 
 pub fn part1(lines: &Vec<String>) -> u16 {
@@ -18,14 +20,14 @@ pub fn part1(lines: &Vec<String>) -> u16 {
     let mut digit2 = 0;
 
     for i in 0..line.len() {
-      if let Some(value) = trie.search(line, i) {
+      if let Some(value) = trie.search(line.as_str(), i) {
         digit1 = value;
         break;
       }
     }
 
     for i in (0..line.len()).rev() {
-      if let Some(value) = trie.search(line, i) {
+      if let Some(value) = trie.search(line.as_str(), i) {
         digit2 = value;
         break;
       }
@@ -111,7 +113,7 @@ impl TrieNode {
     curr.value = Some(value);
   }
 
-  fn search(&self, line: &String, idx: usize) -> Option<u16> {
+  fn search(&self, line: &str, idx: usize) -> Option<u16> {
     let mut curr = self;
 
     for letter in line[idx..line.len()].as_bytes() {
@@ -149,13 +151,13 @@ mod tests {
 
     for (word, val) in word_to_num.iter() {
       println!("{word} {val}");
-      assert_eq!(trie.search(&word.to_string(), 0).unwrap(), *val);
+      assert_eq!(trie.search(word, 0).unwrap(), *val);
     }
 
     for (word, val) in word_to_num {
       println!("{word} {val}");
-      println!("{}", format!("  {}  ", word.to_string()));
-      assert_eq!(trie.search(&format!("  {}  ", word.to_string()), 2).unwrap(), val);
+      println!("  {}  ", word);
+      assert_eq!(trie.search(&format!("  {}  ", word), 2).unwrap(), val);
     }
   }
 }

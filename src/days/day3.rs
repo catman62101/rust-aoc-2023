@@ -1,4 +1,6 @@
-pub fn part1(grid: &Vec<Vec<u8>>) -> i32 {
+// https://adventofcode.com/2023/day/3
+
+pub fn part1(grid: &[Vec<u8>]) -> i32 {
   let directions = [-1, 0, 1, 0, -1, -1, 1, 1, -1];
   let width = grid[0].len() as i32;
   let height = grid.len() as i32;
@@ -14,8 +16,8 @@ pub fn part1(grid: &Vec<Vec<u8>>) -> i32 {
           number.push(grid[y as usize][x as usize]);
 
           for i in 0..directions.len()-1 {
-            let dx = x as i32 + directions[i];
-            let dy = y as i32 + directions[i+1];
+            let dx = x + directions[i];
+            let dy = y + directions[i+1];
     
             if dx < 0 || dx >= width || dy < 0 || dy >= height {
               continue;
@@ -42,7 +44,7 @@ pub fn part1(grid: &Vec<Vec<u8>>) -> i32 {
   part_num_sum
 }
 
-pub fn part2(grid: &Vec<Vec<u8>>) -> i32 {
+pub fn part2(grid: &[Vec<u8>]) -> i32 {
   let height = grid.len();
   let width = grid[0].len();
   let mut gear_ratio_sum = 0;
@@ -69,18 +71,10 @@ pub fn part2(grid: &Vec<Vec<u8>>) -> i32 {
   gear_ratio_sum
 }
 
-fn is_digit(cell: u8) -> bool {
-  match cell {
-    b'0'..=b'9' => true,
-    _ => false
-  }
-}
-
-
-fn extract_numbers(line: &Vec<u8>, i: usize) -> Vec<i32> {
+fn extract_numbers(line: &[u8], i: usize) -> Vec<i32> {
   let mut numbers = Vec::<i32>::new();
 
-  if is_digit(line[i]) {
+  if line[i].is_ascii_digit() {
     if let Some(num) = extract_number(line, i) {
       numbers.push(num);
     }
@@ -100,23 +94,23 @@ fn extract_numbers(line: &Vec<u8>, i: usize) -> Vec<i32> {
   numbers
 }
 
-fn extract_number(line: &Vec<u8>, i: usize) -> Option<i32> {
+fn extract_number(line: &[u8], i: usize) -> Option<i32> {
   let mut start = i as i32;
   let mut end = i as i32;
 
-  while start >= 0 && is_digit(line[(start) as usize]) {
+  while start >= 0 && line[(start) as usize].is_ascii_digit() {
     start -= 1;
   }
   start += 1;
-  while (end as usize) < line.len() && is_digit(line[end as usize]) {
+  while (end as usize) < line.len() && line[end as usize].is_ascii_digit() {
     end += 1;
   }
 
-  return match start < end {
+  match start < end {
     true => Some(
       String::from_utf8(line[(start as usize)..(end as usize)].to_vec()).unwrap()
         .parse().unwrap()
     ),
     false => None
-  };
+  }
 }

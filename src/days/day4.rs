@@ -1,3 +1,5 @@
+// https://adventofcode.com/2023/day/4
+
 use std::collections::HashSet;
 
 pub fn part1(cards: &Vec<String>) -> i32 {
@@ -20,7 +22,7 @@ pub fn part1(cards: &Vec<String>) -> i32 {
   score
 }
 
-pub fn part2(cards: &Vec<String>) -> i32 {
+pub fn part2(cards: &[String]) -> i32 {
   let mut card_counts = vec![1; cards.len()];
   let mut card_overflow = 0;
 
@@ -62,7 +64,7 @@ fn extract_numbers(line: &[u8]) -> Vec<i32> {
   let mut end = 0;
 
   while end < line.len() {
-    if line[end as usize] == b' ' {
+    if line[end] == b' ' {
       if start < end {
         numbers.push(
           String::from_utf8(line[start..end].to_vec()).unwrap().parse().unwrap()

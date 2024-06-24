@@ -1,3 +1,5 @@
+// https://adventofcode.com/2023/day/2
+
 pub fn part1(lines: &Vec<String>) -> i32 {
   let max_red = 12;
   let max_green = 13;
@@ -58,9 +60,9 @@ pub fn part2(lines: &Vec<String>) -> i32 {
   power_sum
 }
 
-fn extract_info(line: &String, case_id: &mut i32, rounds: &mut Vec<(i32, i32, i32)>) {
+fn extract_info(line: &str, case_id: &mut i32, rounds: &mut Vec<(i32, i32, i32)>) {
   let split = line.split(": ").collect::<Vec<&str>>();
-  *case_id = split[0].split(" ").collect::<Vec<&str>>()[1].parse().unwrap();
+  *case_id = split[0].split(' ').collect::<Vec<&str>>()[1].parse().unwrap();
 
   let rounds_strings = split[1].split("; ").collect::<Vec<&str>>();
   *rounds = rounds_strings.iter().map(|round| {
@@ -70,7 +72,7 @@ fn extract_info(line: &String, case_id: &mut i32, rounds: &mut Vec<(i32, i32, i3
     let mut blue = 0;
 
     for color in colors {
-      let color_split: Vec<&str> = color.split(" ").collect();
+      let color_split: Vec<&str> = color.split(' ').collect();
 
       match color_split[1] {
         "red" => { red = color_split[0].parse().unwrap(); },
